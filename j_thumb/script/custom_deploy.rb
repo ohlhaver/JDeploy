@@ -1,5 +1,4 @@
 namespace :deploy do
- 
   task :before_setup do
    set_user(jurnalo)
   end
@@ -7,30 +6,15 @@ namespace :deploy do
    set_user(jurnalo)
   end
 end
-namespace :db do
- 
-  task :migrate do
-   set_user(jurnalo)
-   set :ruby_path, ruby_ee_path
-   run <<-CMD
-     export PATH=#{ruby_path}/bin:$PATH &&
-     cd #{deploy_to}/current &&
-     ruby ./script/migrate ENV=production
-   CMD
-  end
-end
 
 namespace :setup do
  task :pending do
-   #setup::mysql_init
-   #setup::db
  end
  task :all do
    setup::jurnalo_user
    setup::jurnalo_user_password
    setup::yum_upgrade
  end
- 
 end
 
 namespace :b_s_r do
@@ -49,10 +33,12 @@ namespace :install do
  task :all do
    install::essential
    install::git
-   install::mysql
    install::ruby_ee
    install::rubygems
-   install::gems::mysql
-   install::gems::activerecord
+   install::gems::eventmachine
+   install::gems::eventmachine_httpserver
+   install::gems::daemons
+   install::gems::passenger
+   install::nginx_from_passenger
  end
 end

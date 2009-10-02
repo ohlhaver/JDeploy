@@ -1,18 +1,5 @@
 namespace :install do
 
-  task :pending do
-  end
-
-  task :all do
-    install::essential
-    install::git
-    install::mysql
-    install::ruby_enterprise_edition
-    install::rubygems
-    install::gem_mysql
-    install::gem_active_record
-  end
-
   task :essential do
     set_user(root)
     run <<-CMD
@@ -22,15 +9,16 @@ namespace :install do
 
   task :git do
     set_user(root)
-    install::git
     run <<-CMD
       yum -y install gettext-devel expat-devel curl-devel zlib-devel openssl-devel
     CMD
+    software = "git-1.6.4.4"
+    ext      = ".tar.gz"
     run <<-CMD
-      cd /tmp && rm -rf git* &&
-      cp #{soft_repo_path}/git-1.6.4.4.tar.gz . && tar -xvzf git-1.6.4.4.tar.gz &&
-      cd git-1.6.4.4 && make && make prefix=/usr install && make clean &&
-      rm -rf git*
+      cd /tmp && rm -rf #{software}* &&
+      cp #{soft_repo_path}/#{software}#{ext} . && tar -xvzf #{software}#{ext} &&
+      cd #{software} && make && make prefix=/usr install && make clean &&
+      rm -rf #{software}*
     CMD
   end
 
@@ -41,7 +29,7 @@ namespace :install do
     CMD
   end
 
-  task :ruby_enterprise_edition do
+  task :ruby_ee do
     set_user(root)
     set :software, "ruby-enterprise-1.8.6-20090610"
 
@@ -49,7 +37,7 @@ namespace :install do
       yum -y install gcc zlib zlib-devel openssl openssl-devel readline readline-devel bison
     CMD
 
-    set :prefix, "/opt/ruby-enterprise-edition"
+    set :prefix, ruby_ee_path
 
     run <<-CMD
       cd /tmp && rm -rf #{software}* && rm -rf #{prefix} &&
@@ -80,29 +68,39 @@ namespace :install do
     run <<-CMD
       cd /tmp && rm -rf #{software}* &&
       cp #{soft_repo_path}/#{software}.tgz . && tar -xvzf #{software}.tgz && cd #{software} &&
-      export PATH=/opt/ruby-enterprise-edition/bin:$PATH &&
+      export PATH=#{ruby_ee_path}/bin:$PATH &&
       ruby setup.rb &&
       rm -rf #{software}*
     CMD
   end
 
-  task :gem_mysql do 
+  task :nginx_from_passenger do
     set_user(root)
-    run <<-CMD
-      export PATH=/opt/ruby-enterprise-edition/bin:$PATH &&
-      gem install -y mysql
-    CMD
-
+    set :software, "nginx"
+    run "export PATH=#{ruby_ee_path}/bin:$PATH && passenger-install-nginx-module --auto --prefix=#{nginx_path} --auto-download" do |channel, stream, data|
+      puts data
+      if data =~ /Here's what you can expect from the installation process\:/
+        puts "here is the input"
+      end
+    end
   end
 
-
-  task :gem_active_record do 
-    set_user(root)
-    run <<-CMD
-      export PATH=/opt/ruby-enterprise-edition/bin:$PATH &&
-      gem install -y activerecord -v 2.1.0
-    CMD
+  namespace :gems do 
+    ['mysql','activerecord','eventmachine','eventmachine_httpserver','daemons','passenger'].each do |g|
+      task g.to_sym do
+        version = ''
+        version = '-v 2.1.0'  if g == 'activerecord'
+        version = '-v 0.12.8' if g == 'eventmachine'
+        version = '-v 0.1.1'  if g == 'eventmachine_httpserver'
+        version = '-v 1.0.10' if g == 'daemons'
+        version = '-v 2.2.4'  if g == 'passenger'
+        version = "-v #{ENV['version']}"  if ENV['version']
+        set_user(root)
+        run <<-CMD
+          export PATH=#{ruby_ee_path}/bin:$PATH &&
+          gem install -y #{g} #{version}
+        CMD
+      end
+    end
   end
-  
-
 end
