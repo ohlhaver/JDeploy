@@ -9,7 +9,7 @@ role :machines, '174.143.172.94'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
 role :app,         '174.143.172.94'
-set  :application, 'JModels'
+set  :application, 'JThumb'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 
 default_run_options[:pty] = true
@@ -19,7 +19,7 @@ set :repository,    "git@github.com:ohlhaver/JThumb.git"
 set :branch,        "master"
 set :keep_releases, 3
 set :deploy_via,    :remote_cache
-
+set :storage_dir, 'storage'
 
 load '../lib/boot.rb'
 load '../lib/methods.rb'
