@@ -9,13 +9,13 @@ role :machines, '174.143.172.95'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
 role :app,         '174.143.172.95'
-set  :application, 'JModels'
+set  :application, 'JTier1-2API'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 
 default_run_options[:pty] = true
 set :scm,           :git
 set :scm_paraphase, "rosenwel"
-set :repository,    "git@github.com:ohlhaver/JModels.git"
+set :repository,    "git@github.com:ohlhaver/JTier1-to-API.git"
 set :branch,        "master"
 set :keep_releases, 3
 set :deploy_via,    :remote_cache

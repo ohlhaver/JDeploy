@@ -86,7 +86,7 @@ namespace :install do
   end
 
   namespace :gems do 
-    ['mysql','activerecord','eventmachine','eventmachine_httpserver','daemons','passenger'].each do |g|
+    ['mysql','activerecord','eventmachine','eventmachine_httpserver','daemons','passenger','rails'].each do |g|
       task g.to_sym do
         version = ''
         version = '-v 2.1.0'  if g == 'activerecord'
@@ -94,6 +94,7 @@ namespace :install do
         version = '-v 0.1.1'  if g == 'eventmachine_httpserver'
         version = '-v 1.0.10' if g == 'daemons'
         version = '-v 2.2.4'  if g == 'passenger'
+        version = '-v 2.3.4'  if g == 'rails'
         version = "-v #{ENV['version']}"  if ENV['version']
         set_user(root)
         run <<-CMD
