@@ -5,10 +5,13 @@ set  :user do
 end
 set :use_sudo, false
 
-role :machines, '174.143.172.95'
+#role :machines, '174.143.172.95'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
-role :app,         '174.143.172.95'
+role :db, '174.143.172.95', :primary => true
+role :app,  '174.143.172.95'   # JTier1-To-Api 
+role :sphinx, '67.23.42.240'   # Sphinx
+
 set  :application, 'JModels'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 

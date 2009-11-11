@@ -3,8 +3,14 @@ namespace :deploy do
   task :before_setup do
    set_user(jurnalo)
   end
+  
   task :before_update do
    set_user(jurnalo)
+  end
+  
+  desc "Restart Application"
+  task :restart, :roles => :app do
+    run "touch #{release_path}/tmp/restart.txt"
   end
 end
 

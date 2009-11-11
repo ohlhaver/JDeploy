@@ -3,21 +3,24 @@ namespace :deploy do
   task :before_setup do
    set_user(jurnalo)
   end
+  
   task :before_update do
    set_user(jurnalo)
   end
-end
-namespace :db do
- 
-  task :migrate do
-   set_user(jurnalo)
-   set :ruby_path, ruby_ee_path
-   run <<-CMD
-     export PATH=#{ruby_path}/bin:$PATH &&
-     cd #{deploy_to}/current &&
-     ruby ./script/migrate ENV=production
-   CMD
+  
+  task :after_update_code, :roles => [:app, :sphinx, :db] do
   end
+  
+  task :after_update, :roles => :sphinx do
+    run "rm -f #{release_path}/config/sphinx.yml"
+    run "ln -s #{deploy_to}/shared/sphinx.yml #{release_path}/config/sphinx.yml"
+    run "ln -s #{deploy_to}/shared/sphinx_data #{release_path}/sphinx_data"
+  end
+  
+  desc "Restart Application"
+  task :restart, :roles => :app do
+  end
+    
 end
 
 namespace :setup do
