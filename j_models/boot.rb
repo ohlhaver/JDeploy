@@ -17,7 +17,7 @@ set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 
 default_run_options[:pty] = true
 set :scm,           :git
-set :scm_paraphase, "rosenwel"
+set :scm_passphrase, "rosenwel"
 set :repository,    "git@github.com:ohlhaver/JModels.git"
 set :branch,        "master"
 set :keep_releases, 3

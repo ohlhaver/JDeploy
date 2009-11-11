@@ -8,7 +8,8 @@ namespace :deploy do
    set_user(jurnalo)
   end
   
-  task :after_update_code, :roles => [:app, :sphinx, :db] do
+  task :after_update_code, :roles => [:app, :db] do
+    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -"
   end
   
   task :after_update, :roles => :sphinx do
