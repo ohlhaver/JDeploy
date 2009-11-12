@@ -1,4 +1,14 @@
 namespace :deploy do
+  
+  task :rebuild_index do
+    set :rebuild_sphinx_index, :true
+    deploy
+  end
+  
+  task :rebuild_index_with_migrations do
+    set :rebuild_sphinx_index, :true
+    deploy::migrations
+  end
  
   task :before_setup do
    set_user(jurnalo)
@@ -16,6 +26,14 @@ namespace :deploy do
     run "rm -f #{release_path}/config/sphinx.yml"
     run "ln -s #{deploy_to}/shared/sphinx.yml #{release_path}/config/sphinx.yml"
     run "ln -s #{deploy_to}/shared/sphinx_data #{release_path}/sphinx_data"
+    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -"
+    unless "#{rebuild_sphinx_index}" == "false"
+      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:stop RAILS_ENV=production; cd -"
+      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:build RAILS_ENV=production; cd -"
+      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:start RAILS_ENV=production; cd -"
+    else
+      run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:restart RAILS_ENV=production; cd -"
+    end
   end
   
   desc "Restart Application"
