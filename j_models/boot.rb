@@ -27,6 +27,7 @@ set :deploy_via,    :remote_cache
 load '../lib/boot.rb'
 set :ruby_ee_path,'/opt/ruby-enterprise-edition'
 set :rebuild_sphinx_index, :false
+set :rake, '/opt/ruby-enterprise-edition/bin/rake'
 load '../lib/methods.rb'
 load '../lib/build_software_repository.rb'
 load '../lib/install.rb'
