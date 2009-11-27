@@ -11,6 +11,7 @@ set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 role :db, '174.143.172.95', :primary => true
 role :app,  '174.143.172.95'   # JTier1-To-Api 
 role :sphinx, '67.23.42.240'   # Sphinx
+role :bgserver, '174.143.175.195' # Background Server Running Clustering
 
 set  :application, 'JModels'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"

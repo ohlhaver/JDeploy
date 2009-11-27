@@ -18,23 +18,49 @@ namespace :deploy do
    set_user(jurnalo)
   end
   
-  task :after_update_code, :roles => [:app, :db] do
-    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -"
+  # task :after_update_code, :roles => [:app, :db] do
+  #   run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -"
+  # end
+  
+  task :app_tasks, :roles => :app do
+    servers = find_servers_for_task(current_task) & roles[:app].servers
+    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers if servers.any?
   end
   
-  task :after_update, :roles => :sphinx do
-    run "rm -f #{release_path}/config/sphinx.yml"
-    run "ln -s #{deploy_to}/shared/sphinx.yml #{release_path}/config/sphinx.yml"
-    run "ln -s #{deploy_to}/shared/sphinx_data #{release_path}/sphinx_data"
-    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -"
-    unless "#{rebuild_sphinx_index}" == "false"
-      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:stop RAILS_ENV=production; cd -"
-      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:build RAILS_ENV=production; cd -"
-      run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:start RAILS_ENV=production; cd -"
-    else
-      run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:restart RAILS_ENV=production; cd -"
+  task :db_tasks, :roles => :db do
+    servers = find_servers_for_task(current_task) & roles[:db].servers
+    run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers if servers.any?
+  end
+  
+  task :sphinx_tasks, :roles => :sphinx do
+    servers = find_servers_for_task(current_task) & roles[:sphinx].servers
+    if servers.any?
+      run "rm -f #{release_path}/config/sphinx.yml", :hosts => servers
+      run "ln -s #{deploy_to}/shared/sphinx.yml #{release_path}/config/sphinx.yml", :hosts => servers
+      run "ln -s #{deploy_to}/shared/sphinx_data #{release_path}/sphinx_data", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
+      unless "#{rebuild_sphinx_index}" == "false"
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:stop RAILS_ENV=production; cd -", :hosts => servers
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:build RAILS_ENV=production; cd -", :hosts => servers
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:start RAILS_ENV=production; cd -", :hosts => servers
+      else
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:restart RAILS_ENV=production; cd -", :hosts => servers
+      end
     end
   end
+  
+  task :bgserver_tasks, :roles => :bgserver do
+    servers = find_servers_for_task(current_task) & roles[:bgserver].servers
+    if servers.any?
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake clustering:restart RAILS_ENV=production; cd -", :hosts => servers
+    end
+  end
+  
+  after "deploy:update", 'deploy:app_tasks'
+  after "deploy:update", 'deploy:db_tasks'
+  after "deploy:update", 'deploy:sphinx_tasks'
+  after "deploy:update", 'deploy:bgserver_tasks'
   
   desc "Restart Application"
   task :restart, :roles => :app do
