@@ -2,7 +2,8 @@ namespace :deploy do
   
   task :rebuild_index do
     set :rebuild_sphinx_index, :true
-    deploy
+    deploy::update
+    deploy::restart
   end
   
   task :rebuild_index_with_migrations do
@@ -41,7 +42,7 @@ namespace :deploy do
       run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
       unless "#{rebuild_sphinx_index}" == "false"
         run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:stop RAILS_ENV=production; cd -", :hosts => servers
-        run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:build RAILS_ENV=production; cd -", :hosts => servers
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:rebuild RAILS_ENV=production; cd -", :hosts => servers
         run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:start RAILS_ENV=production; cd -", :hosts => servers
       else
         run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:restart RAILS_ENV=production; cd -", :hosts => servers
