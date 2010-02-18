@@ -12,12 +12,17 @@ namespace :deploy do
   # This tasks assumes we know the location of the JModels app
   #
   task :after_update_code, :roles => :app do
-    run "ln -s #{release_path}/config.yml.production #{release_path}/config.yml"
+    run "ln -s #{deploy_to}/../JModels/current/config/sphinx.yml  #{release_path}/config/sphinx.yml"
+    run "ln -s #{deploy_to}/../JModels/current/config/production.sphinx.conf  #{release_path}/config/production.sphinx.conf"
   end
   
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "touch #{release_path}/tmp/restart.txt"
+    begin
+      run "touch #{release_path}/tmp/restart.txt"
+    rescue
+      run "touch #{deploy_to}/current/tmp/restart.txt"
+    end
   end
   
 end

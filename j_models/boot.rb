@@ -9,9 +9,12 @@ set :use_sudo, false
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
 role :db, '174.143.172.95', :primary => true
-role :app,  '174.143.172.95', '174.143.171.52'   # JTier1-To-Api, JMasterInterface
-role :sphinx, '67.23.42.240'   # Sphinx
-role :bgserver, '174.143.175.195' # Background Server Running Clustering
+role :app,  '174.143.172.95', '174.143.171.52', '174.143.169.37', 'api.jurnalo.com'   # JTier1-To-Api, JMasterInterface, JUserInterface
+role :sphinx, '67.23.42.240'       # Sphinx
+role :bgserver, '174.143.175.195'  # Background Server Running Clustering
+role :bgserver2, '67.23.42.203'     # Background Server Running Email Alerts and Quality Ratings
+role :juser, '174.143.169.37', 'api.jurnalo.com'
+role :jmaster, '174.143.171.52'
 
 set  :application, 'JModels'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"

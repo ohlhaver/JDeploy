@@ -58,10 +58,20 @@ namespace :deploy do
     end
   end
   
+  task :bgserver2_tasks, :roles => :bgserver2 do
+    servers = find_servers_for_task(current_task) & roles[:bgserver2].servers
+    if servers.any?
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake quality_rating:restart RAILS_ENV=production; cd -", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake email_alerts:restart RAILS_ENV=production; cd -", :hosts => servers
+    end
+  end
+  
   after "deploy:update", 'deploy:app_tasks'
   after "deploy:update", 'deploy:db_tasks'
   after "deploy:update", 'deploy:sphinx_tasks'
   after "deploy:update", 'deploy:bgserver_tasks'
+  after "deploy:update", 'deploy:bgserver2_tasks'
   
   desc "Restart Application"
   task :restart, :roles => :app do

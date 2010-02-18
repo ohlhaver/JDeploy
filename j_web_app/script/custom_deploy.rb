@@ -8,13 +8,6 @@ namespace :deploy do
    set_user(jurnalo)
   end
   
-  #
-  # This tasks assumes we know the location of the JModels app
-  #
-  task :after_update_code, :roles => :app do
-    run "ln -s #{release_path}/config.yml.production #{release_path}/config.yml"
-  end
-  
   desc "Restart Application"
   task :restart, :roles => :app do
     run "touch #{release_path}/tmp/restart.txt"
