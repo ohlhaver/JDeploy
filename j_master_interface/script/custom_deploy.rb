@@ -18,7 +18,11 @@ namespace :deploy do
   
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "touch #{release_path}/tmp/restart.txt"
+    begin
+      run "touch #{release_path}/tmp/restart.txt"
+    rescue
+      run "touch #{deploy_to}/current/tmp/restart.txt"
+    end
   end
   
 end

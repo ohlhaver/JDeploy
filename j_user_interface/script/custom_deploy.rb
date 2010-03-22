@@ -12,6 +12,7 @@ namespace :deploy do
   # This tasks assumes we know the location of the JModels app
   #
   task :after_update_code, :roles => :app do
+    run "rm -f #{release_path}/config/sphinx.yml"
     run "ln -s #{deploy_to}/../JModels/current/config/sphinx.yml  #{release_path}/config/sphinx.yml"
     run "ln -s #{deploy_to}/../JModels/current/config/production.sphinx.conf  #{release_path}/config/production.sphinx.conf"
   end
