@@ -8,7 +8,8 @@ set :use_sudo, false
 role :machines, '174.143.172.95'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
-role :app,         '174.143.172.95'
+role :app,         '174.143.172.95', '174.143.175.163'
+role :jt2m2, '174.143.175.163'
 set  :application, 'JTier1-2API'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 

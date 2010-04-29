@@ -58,6 +58,15 @@ namespace :deploy do
     end
   end
   
+  task :jthumb_tasks, :roles => :jthumb do
+    servers = find_servers_for_task(current_task) & roles[:jthumb].servers
+    if servers.any?
+      run "ln -s #{deploy_to}/shared/public/images #{release_path}/public/images", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
+      run "cd #{release_path};#{ruby_ee_path}/bin/rake thumbs:restart RAILS_ENV=production; cd -", :hosts => servers
+    end
+  end
+  
   task :bgserver2_tasks, :roles => :bgserver2 do
     servers = find_servers_for_task(current_task) & roles[:bgserver2].servers
     if servers.any?
@@ -72,6 +81,7 @@ namespace :deploy do
   after "deploy:update", 'deploy:sphinx_tasks'
   after "deploy:update", 'deploy:bgserver_tasks'
   after "deploy:update", 'deploy:bgserver2_tasks'
+  after "deploy:update", 'deploy:jthumb_tasks'
   
   desc "Restart Application"
   task :restart, :roles => :app do
