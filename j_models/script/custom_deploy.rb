@@ -54,7 +54,7 @@ namespace :deploy do
     servers = find_servers_for_task(current_task) & roles[:bgserver].servers
     if servers.any?
       run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
-      run "cd #{release_path};#{ruby_ee_path}/bin/rake clustering:restart RAILS_ENV=production; cd -", :hosts => servers
+      #run "cd #{release_path};#{ruby_ee_path}/bin/rake clustering:restart RAILS_ENV=production; cd -", :hosts => servers
     end
   end
   

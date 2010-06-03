@@ -8,6 +8,7 @@ set :use_sudo, false
 role :machines, 'beta.jurnalo.com'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
+role :sitemap,     'beta.jurnalo.com'
 role :app,         'beta.jurnalo.com', '67.23.42.188'
 set  :application, 'JWebApp'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"

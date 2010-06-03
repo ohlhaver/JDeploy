@@ -13,6 +13,15 @@ namespace :deploy do
     run "touch #{release_path}/tmp/restart.txt"
   end
   
+  after "deploy:update", 'deploy:sitemap_tasks'
+  
+  
+  task :sitemap_tasks, :roles => :sitemap do
+    servers = find_servers_for_task(current_task) & roles[:sitemap].servers
+    if servers.any?
+      run "ln -s #{deploy_to}/shared/sitemaps #{release_path}/public/sitemaps", :hosts => servers
+    end
+  end
 end
 
 namespace :setup do

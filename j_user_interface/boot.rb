@@ -9,6 +9,8 @@ role :machines, '174.143.169.37'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
 role :app,         '174.143.169.37', 'api.jurnalo.com'
+role :user, '174.143.169.37'
+role :api, 'api.jurnalo.com'
 set  :application, 'JUserInterface'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 
