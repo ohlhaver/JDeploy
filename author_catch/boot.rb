@@ -5,19 +5,16 @@ set  :user do
 end
 set :use_sudo, false
 
-role :machines, 'beta.jurnalo.com'
 set :soft_repo_path, "/home/#{jurnalo}/softRepo"
 
-role :sitemap,     'beta.jurnalo.com'
-role :app,         'beta.jurnalo.com', '67.23.42.188'
-role :cache_crawl, '174.143.169.36'
-set  :application, 'JWebApp'
+role :app,         '174.143.173.196'
+set  :application, 'AuthorCatch'
 set  :deploy_to,   "/home/#{jurnalo}/apps/#{application}"
 
 default_run_options[:pty] = true
 set :scm,           :git
 set :scm_passphrase, "rosenwel"
-set :repository,    "git@github.com:ohlhaver/JWebApp.git"
+set :repository,    "git@github.com:ohlhaver/AuthorCatch.git"
 set :branch,        "master"
 set :keep_releases, 3
 set :deploy_via,    :remote_cache

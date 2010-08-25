@@ -11,25 +11,8 @@ namespace :deploy do
   desc "Restart Application"
   task :restart, :roles => :app do
     run "touch #{release_path}/tmp/restart.txt"
-    servers = find_servers_for_task(current_task) & roles[:sitemap].servers
-    if servers.any?
-      sleep 5
-      run "curl --silent http://www.jurnalo.com/stylesheets/base_g10.css > /dev/null"
-      run "curl --silent http://www.jurnalo.com/stylesheets/base_g10ie.css > /dev/null"
-      run "curl --silent http://www.jurnalo.com/stylesheets/base_app.css > /dev/null"
-      run "curl --silent http://www.jurnalo.com/stylesheets/jbase.js > /dev/null"
-    end
   end
   
-  after "deploy:update", 'deploy:sitemap_tasks'
-  
-  
-  task :sitemap_tasks, :roles => :sitemap do
-    servers = find_servers_for_task(current_task) & roles[:sitemap].servers
-    if servers.any?
-      run "ln -s #{deploy_to}/shared/sitemaps #{release_path}/public/sitemaps", :hosts => servers
-    end
-  end
 end
 
 namespace :setup do

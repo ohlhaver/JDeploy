@@ -45,7 +45,7 @@ namespace :deploy do
         run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:rebuild RAILS_ENV=production; cd -", :hosts => servers
         run "cd #{release_path}; #{ruby_ee_path}/bin/rake thinking_sphinx:delayed_delta:start RAILS_ENV=production; cd -", :hosts => servers
       else
-        run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:restart RAILS_ENV=production; cd -", :hosts => servers
+        run "cd #{release_path}; #{ruby_ee_path}/bin/rake  thinking_sphinx:delayed_delta:stop RAILS_ENV=production; cd -", :hosts => servers
       end
     end
   end
@@ -71,8 +71,9 @@ namespace :deploy do
     servers = find_servers_for_task(current_task) & roles[:bgserver2].servers
     if servers.any?
       run "cd #{release_path};#{ruby_ee_path}/bin/rake thinking_sphinx:configure RAILS_ENV=production;cd -", :hosts => servers
-      run "cd #{release_path};#{ruby_ee_path}/bin/rake quality_rating:restart RAILS_ENV=production; cd -", :hosts => servers
-      run "cd #{release_path};#{ruby_ee_path}/bin/rake email_alerts:restart RAILS_ENV=production; cd -", :hosts => servers
+      run "ln -s #{deploy_to}/shared/archives #{release_path}/db/archives", :hosts => servers
+      #run "cd #{release_path};#{ruby_ee_path}/bin/rake quality_rating:restart RAILS_ENV=production; cd -", :hosts => servers
+      #run "cd #{release_path};#{ruby_ee_path}/bin/rake email_alerts:restart RAILS_ENV=production; cd -", :hosts => servers
     end
   end
   
